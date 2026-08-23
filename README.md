@@ -1,6 +1,6 @@
 # Dynamic PTO & Leave Management Engine
 
-| Module | What it is |
+| Module | Status | What it is |
 |---|---|---|
 | **1 — Data layer**  | Schema, migrations, seed data, write-time validation |
 | **2 — Policy engine**| `resolve_policy()` — the one lookup everything else calls |
@@ -8,7 +8,7 @@
 | **4 — Dashboard** | `get_live_balance()` + the full employee payload |
 | **5 — Classification** | Request submission, paid/unpaid split, substitution order |
 | **6 — Approval** | Chain resolution, authorization, delegation, SLA, outbox |
-| 7 — Integration | End-to-end pipeline + ledger deduction + payroll |
+| 7 — Integration | not started | End-to-end pipeline + ledger deduction + payroll |
 | **Review fixes 5–8** | Pro-ration, part-time, termination, explicit rounding |
 | **Review fixes 9–41** | See [FINDINGS.md](FINDINGS.md) |
 | **Policy lifecycle** | HR's annual roll-forward (`app/policy_admin.py`) |
