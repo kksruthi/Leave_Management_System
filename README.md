@@ -2,17 +2,17 @@
 
 | Module | Status | What it is |
 |---|---|---|
-| **1 — Data layer** | ✅ built | Schema, migrations, seed data, write-time validation |
-| **2 — Policy engine** | ✅ built | `resolve_policy()` — the one lookup everything else calls |
-| **3 — Accrual** | ✅ built | Monthly / annual-lump ledger jobs + manual triggers |
-| **4 — Dashboard** | ✅ built | `get_live_balance()` + the full employee payload |
-| **5 — Classification** | ✅ built | Request submission, paid/unpaid split, substitution order |
-| **6 — Approval** | ✅ built | Chain resolution, authorization, delegation, SLA, outbox |
+| **1 — Data layer**  | Schema, migrations, seed data, write-time validation |
+| **2 — Policy engine**| `resolve_policy()` — the one lookup everything else calls |
+| **3 — Accrual** | Monthly / annual-lump ledger jobs + manual triggers |
+| **4 — Dashboard** | `get_live_balance()` + the full employee payload |
+| **5 — Classification** | Request submission, paid/unpaid split, substitution order |
+| **6 — Approval** | Chain resolution, authorization, delegation, SLA, outbox |
 | 7 — Integration | not started | End-to-end pipeline + ledger deduction + payroll |
-| **Review fixes 5–8** | ✅ built | Pro-ration, part-time, termination, explicit rounding |
-| **Review fixes 9–41** | ✅ built | See [FINDINGS.md](FINDINGS.md) |
-| **Policy lifecycle** | ✅ built | HR's annual roll-forward (`app/policy_admin.py`) |
-| **Dashboard + auth** | ✅ built | JWT login, role-based React UI — see [DASHBOARD.md](DASHBOARD.md) |
+| **Review fixes 5–8** | Pro-ration, part-time, termination, explicit rounding |
+| **Review fixes 9–41** | See [FINDINGS.md](FINDINGS.md) |
+| **Policy lifecycle** | HR's annual roll-forward (`app/policy_admin.py`) |
+| **Dashboard + auth** | JWT login, role-based React UI — see [DASHBOARD.md](DASHBOARD.md) |
 
 `pytest` runs all built modules — **356 tests**. It provisions its own
 `leave_engine_test` database, so it never competes with demo data.
