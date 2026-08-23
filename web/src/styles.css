@@ -1,0 +1,565 @@
+/* Leave Management Software — navy, orange, white.
+   ============================================================================
+
+   ## The idea
+
+   This is an **instrument**, not a marketing page. It is read many times a day
+   by people checking a number, and the numbers are the content. So the design
+   gets out of their way and does three things:
+
+     1. **One typeface, hierarchy from size and weight.** No display serif, no
+        second family. Headings are tighter-tracked and heavier; micro-labels
+        are small caps with wide tracking. That contrast is enough, and it
+        stays legible at the sizes this is actually read at.
+     2. **Hairlines, not cards floating on grey.** Surfaces sit flat on warm
+        paper. Card edges use `--line` (which holds) and row rules use
+        `--grid` (which disappears) — mixing those up is what made adjacent
+        cards smear into one block in dark mode. Nothing hovers; shadow is
+        reserved for the notification panel, which genuinely floats.
+     3. **Orange is a pointer, never decoration.** It marks the active nav
+        item, the primary action, and the figure that changed. Everything else
+        is ink, paper and navy. The moment a second orange thing competes,
+        neither is a signal.
+
+   ## Colour
+
+   Navy is structure (the rail, headings, weight). White/paper is content.
+   Orange is what to do next. The categorical data palette is validated — run
+   `npm run validate:palette` after ANY colour edit here. Every value below is
+   one the validator passes; picking a prettier hue by eye is how the CVD and
+   contrast guarantees stop being true.
+
+   ## The type scale
+
+   Deliberately short. A page that needs nine sizes has a structure problem,
+   not a typography problem.
+
+        display   25   / 650 / -.022em    page titles
+        title     15.5 / 650 / -.012em    card headings
+        body      14.5 / 400              everything
+        micro      9.5 / 600 / +.08em     caps: table heads, labels, meta
+*/
+
+:root {
+  color-scheme: light;
+
+  /* --- navy: structure --------------------------------------------------- */
+  --navy-900: #071426;
+  --navy-800: #0b1e33;
+  --navy-700: #13304d;
+  --navy-600: #1d4a75;
+  --navy-100: #dde7f1;
+
+  /* --- orange: the next action ------------------------------------------- */
+  --accent: #c2521c;          /* 4.9:1 on paper — safe for text and links   */
+  --accent-solid: #c2521c;    /* button fills, always with white text on top */
+  --accent-bright: #e2652b;   /* DECORATIVE ONLY — rails, dots, hairlines    */
+  --accent-ink: #ffffff;
+  --accent-soft: #fbf1ea;
+
+  /* --- paper: content ---------------------------------------------------- */
+  --surface-1: #ffffff;
+  --page: #f6f4f1;            /* warm, so white cards read as paper on desk  */
+  --ink: #12161c;
+  --ink-2: #46505e;
+  --muted: #5f6f87;
+  --grid: #e6e2dc;            /* hairline between rows                       */
+  --line: #cfc9c0;            /* hairline around surfaces and inputs         */
+
+  /* --- categorical data (validated; do not eyeball) ---------------------- */
+  --EL: #1a5aa0;
+  --CL: #9c3a14;
+  --SL: #0d6b53;
+  --Unpaid: #5b2f9e;
+  --series-1: var(--EL);
+  --series-2: var(--CL);
+  --series-3: var(--SL);
+  --series-4: var(--Unpaid);
+  --series-5: #8a2f6c;
+  --neutral: #5f6f87;
+  --on-fill: #ffffff;
+
+  /* --- status ------------------------------------------------------------ */
+  --good: #0a7d43;
+  --warning: #8a5b00;
+  --warning-bg: #fbf3e4;
+  --serious: #c2521c;
+  --critical: #c0342f;
+
+  --radius: 10px;
+  --shadow: none;
+  --float: 0 18px 44px -12px rgba(7, 20, 38, .28);
+
+  /* One family. Hierarchy comes from size, weight and tracking — a display
+     serif was distinctive but reads as decorative on a screen people use
+     forty times a day. */
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto,
+          Helvetica, Arial, sans-serif;
+  --serif: var(--sans);
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --surface-1: #10161d;
+  --page: #0a0e13;
+  --ink: #f3f1ed;
+  --ink-2: #b9c2cd;
+  --muted: #93a6bd;
+  --grid: #1e2731;
+  --line: #2c3742;
+  --navy-900: #050d18;
+  --navy-800: #070f1b;
+  --navy-700: #14304c;
+  --accent: #ff8b4d;
+  --accent-solid: #c2521c;
+  --accent-bright: #ff8b4d;
+  --accent-soft: #24170f;
+  --on-fill: #0b1420;
+  --EL: #4f9ce8;
+  --CL: #e8703e;
+  --SL: #2ab392;
+  --Unpaid: #9186e8;
+  --series-5: #d072ac;
+  --good: #35c47a;
+  --warning: #e8b055;
+  --warning-bg: #241d10;
+  --serious: #f0834f;
+  --critical: #e5605a;
+  --float: 0 18px 44px -12px rgba(0, 0, 0, .7);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font: 14.5px/1.55 var(--sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3 { margin: 0 0 .35em; line-height: 1.25; }
+h1 { font-size: 25px; font-weight: 650; letter-spacing: -.022em; }
+h2 { font-size: 15.5px; font-weight: 650; letter-spacing: -.012em; }
+h3 { font-size: 14px; font-weight: 650; letter-spacing: -.008em; }
+a { color: var(--accent); text-underline-offset: 2px; }
+button { font: inherit; }
+
+/* ---------- shell ---------- */
+.shell {
+  display: grid; grid-template-columns: 250px 1fr; min-height: 100vh;
+  /* The rail is `position: sticky; height: 100vh`, so on a page taller than
+     the viewport its grid cell out-runs it and the paper shows through
+     underneath. Painting the column on the shell fills it at no cost. */
+  background: linear-gradient(90deg, var(--navy-900) 0 250px, transparent 250px);
+}
+
+.sidebar {
+  background: var(--navy-900);
+  color: #c9d6e4;
+  padding: 26px 0 18px;
+  display: flex; flex-direction: column; gap: 2px;
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+}
+
+/* No logo. The wordmark is the mark: set tight, with a hairline under it and
+   a tracked-out descriptor beneath — considered, rather than a placeholder
+   box waiting for an image. */
+.brand {
+  font-size: 15px; font-weight: 650; color: #fff; letter-spacing: -.01em;
+  padding: 0 22px 20px; margin-bottom: 6px;
+  letter-spacing: .01em;
+  border-bottom: 1px solid rgba(255, 255, 255, .09);
+}
+.brand .mark { display: none; }           /* deliberately no logo lockup */
+.brand span {
+  display: block; margin-top: 5px;
+  font-family: var(--sans); font-size: 10.5px; font-weight: 500;
+  letter-spacing: .14em; text-transform: uppercase; color: #7d93ad;
+}
+
+.nav-group {
+  font-size: 10px; text-transform: uppercase; letter-spacing: .16em;
+  color: #6b819b; padding: 22px 22px 8px; font-weight: 600;
+}
+.nav a {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 8px 22px; text-decoration: none;
+  color: #b6c6d8; font-size: 14px;
+  border-left: 2px solid transparent;
+  transition: color .12s ease, background .12s ease;
+}
+.nav a:hover { color: #fff; background: rgba(255, 255, 255, .045); }
+.nav a.active {
+  color: #fff; font-weight: 600;
+  border-left-color: var(--accent-bright);
+  background: linear-gradient(90deg, rgba(226, 101, 43, .16), transparent 70%);
+}
+.nav .pill {
+  background: var(--accent-bright); color: #fff; font-size: 10.5px;
+  font-weight: 700; border-radius: 999px; padding: 1px 6px; min-width: 18px;
+  text-align: center; letter-spacing: .02em;
+}
+
+.sidebar-foot {
+  margin-top: auto; padding: 16px 22px 0;
+  border-top: 1px solid rgba(255, 255, 255, .09);
+  font-size: 13px; color: #b6c6d8;
+}
+.sidebar-foot strong { color: #fff; font-weight: 600; }
+.sidebar-foot .muted {
+  color: #7d93ad; font-size: 10.5px; letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.sidebar-foot .btn {
+  background: transparent; border-color: rgba(255, 255, 255, .2); color: #d9e4f0;
+}
+.sidebar-foot .btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, .08); border-color: rgba(255, 255, 255, .34);
+}
+
+.main { padding: 34px 44px 80px; max-width: 1240px; }
+
+/* A rule under the page title. One line, and the header stops needing a box. */
+.page-head {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 24px; margin-bottom: 26px;
+  padding-bottom: 16px; border-bottom: 1px solid var(--line);
+}
+.sub { color: var(--ink-2); font-size: 13.5px; margin: 0; }
+
+.topbar {
+  display: flex; align-items: center; justify-content: flex-end; gap: 10px;
+  margin: -10px 0 10px;
+}
+
+/* ---------- surfaces ---------- */
+.card {
+  background: var(--surface-1);
+  /* `--line`, not `--grid`. The row hairline is meant to disappear; a card
+     edge is meant to hold. In dark mode the lighter rule was so close to the
+     surface that adjacent cards read as one smeared block. */
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+}
+.card + .card { margin-top: 20px; }
+/* ...but NOT inside a grid or a stack, which space their own children. Two
+   cards side by side in a `.g2` are adjacent siblings, so the rule above was
+   pushing every right-hand column down 20px and leaving the two columns
+   permanently out of step. */
+.grid > .card, .stack > .card { margin-top: 0; }
+/* A seven-column table in a half-width card has to go somewhere. Scrolling
+   inside the card keeps the layout intact and the last column reachable. */
+.card table { min-width: 100%; }
+.card > table, .card > div > table { display: table; }
+.card { overflow-x: auto; }
+/* The accent edge marks the card that wants attention — one per screen. */
+.card-accent { border-top: 2px solid var(--accent-bright); }
+/* The nav rail's active bar is the one square edge left, deliberately: it is
+   an indicator against the panel edge, not a container. */
+.card > .between:first-child { padding-bottom: 14px; border-bottom: 1px solid var(--grid); }
+.card > .between:first-child + * { margin-top: 16px; }
+
+/* `align-items: start` so a card with three rows is not stretched to match a
+   card with ten. Equal-height columns look tidy in a mock-up and leave big
+   dead panels in real data. */
+.grid { display: grid; gap: 20px; align-items: start; }
+.g2 { grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); }
+.grid + .card, .card + .grid, .grid + .grid { margin-top: 20px; }
+.g3 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.g4 { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+
+/* ---------- stat tiles ---------- */
+/* No border, no shadow: a hairline above and a serif figure. Reads like a
+   printed table of results rather than four floating panels. */
+.stat {
+  background: transparent;
+  border: none; border-top: 1px solid var(--line);
+  border-radius: 0; padding: 14px 0 4px;
+}
+.stat .label {
+  font-size: 10px; color: var(--muted); text-transform: uppercase;
+  letter-spacing: .15em; font-weight: 600;
+}
+.stat .value {
+  font-size: 32px; font-weight: 600;
+  letter-spacing: -.035em; margin-top: 8px; line-height: 1;
+  font-variant-numeric: tabular-nums lining-nums;
+  color: var(--navy-700);
+}
+:root[data-theme="dark"] .stat .value { color: var(--ink); }
+.stat .foot { font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.45; }
+.stat.emphasis { border-top-color: var(--accent-bright); }
+.stat.emphasis .value { color: var(--accent); }
+
+/* Inside a card the tiles need their own top rule to survive. */
+.card .stat { border-top-color: var(--grid); }
+
+/* ---------- badges ---------- */
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 600; letter-spacing: .04em;
+  padding: 2px 9px; border-radius: 999px;
+  border: 1px solid transparent; white-space: nowrap;
+  text-transform: uppercase;
+}
+.badge .dot { width: 5px; height: 5px; border-radius: 50%; flex: none; }
+.badge-approved { background: color-mix(in srgb, var(--good) 9%, transparent); color: var(--good);
+  border-color: color-mix(in srgb, var(--good) 28%, transparent); }
+.badge-pending { background: var(--warning-bg); color: var(--warning);
+  border-color: color-mix(in srgb, var(--warning) 32%, transparent); }
+.badge-forwarded { background: color-mix(in srgb, var(--navy-600) 9%, transparent);
+  color: var(--navy-600); border-color: color-mix(in srgb, var(--navy-600) 28%, transparent); }
+:root[data-theme="dark"] .badge-forwarded { color: #8ab4e8; }
+.badge-rejected { background: color-mix(in srgb, var(--critical) 8%, transparent); color: var(--critical);
+  border-color: color-mix(in srgb, var(--critical) 28%, transparent); }
+.badge-cancelled { background: transparent; color: var(--muted); border-color: var(--line); }
+.badge-type {
+  background: transparent; border-color: var(--line); color: var(--ink-2);
+  font-family: var(--mono); text-transform: none; letter-spacing: 0;
+}
+.badge-accent { background: var(--accent-soft); color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 26%, transparent); }
+
+/* ---------- tables ---------- */
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+th {
+  text-align: left; font-size: 9.5px; text-transform: uppercase;
+  letter-spacing: .08em; color: var(--muted); font-weight: 600;
+  padding: 0 9px 8px; border-bottom: 1px solid var(--line);
+}
+th:first-child, td:first-child { padding-left: 0; }
+th:last-child, td:last-child { padding-right: 0; }
+td { padding: 10px 9px; border-bottom: 1px solid var(--grid); vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: color-mix(in srgb, var(--accent-bright) 4%, transparent); }
+.num {
+  text-align: right; font-variant-numeric: tabular-nums lining-nums;
+  font-family: var(--mono); font-size: 12.5px;
+}
+
+/* ---------- forms ---------- */
+/* Sentence case. The uppercase micro-label is reserved for things that are
+   always two or three words — table heads, stat labels, nav groups. A whole
+   sentence set in caps with .13em tracking is unreadable and reads as
+   shouting, which is exactly what happened to "Comment — required to reject,
+   optional otherwise…". */
+label {
+  display: block; font-size: 12px; font-weight: 600; color: var(--ink-2);
+  margin-bottom: 6px; letter-spacing: 0;
+}
+input, select, textarea {
+  width: 100%; padding: 9px 12px;
+  border: 1px solid var(--line); border-radius: 8px;
+  background: var(--surface-1); color: var(--ink); font: inherit;
+}
+input:hover, select:hover, textarea:hover { border-color: var(--muted); }
+input:focus, select:focus, textarea:focus {
+  outline: none; border-color: var(--accent-solid);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-bright) 18%, transparent);
+}
+.field { margin-bottom: 16px; }
+.row { display: flex; gap: 16px; flex-wrap: wrap; }
+.row > * { flex: 1 1 170px; }
+.check {
+  display: flex; align-items: center; gap: 8px; font-size: 14px;
+  font-weight: 500; color: var(--ink);
+  text-transform: none; letter-spacing: 0;
+}
+.check input { width: auto; accent-color: var(--accent-solid); }
+
+.btn {
+  padding: 8px 16px; border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--surface-1); color: var(--ink);
+  cursor: pointer; font-weight: 600; font-size: 13px; letter-spacing: .01em;
+  transition: background .12s ease, border-color .12s ease;
+}
+.btn:hover:not(:disabled) { border-color: var(--ink-2); }
+.btn:disabled { opacity: .42; cursor: not-allowed; }
+/* The one orange button per screen: the action you came here to take. */
+.btn-primary {
+  background: var(--accent-solid); border-color: var(--accent-solid);
+  color: var(--accent-ink);
+}
+.btn-primary:hover:not(:disabled) { background: #a84518; border-color: #a84518; }
+/* Approve is a commitment. Navy, so it reads weighty rather than as the
+   same "next step" the accent means. */
+.btn-navy { background: var(--navy-800); border-color: var(--navy-800); color: #fff; }
+.btn-navy:hover:not(:disabled) { background: var(--navy-700); border-color: var(--navy-700); }
+.btn-good { background: var(--good); border-color: var(--good); color: #fff; }
+.btn-danger { background: transparent; border-color: color-mix(in srgb, var(--critical) 45%, transparent); color: var(--critical); }
+.btn-danger:hover:not(:disabled) { border-color: var(--critical); background: color-mix(in srgb, var(--critical) 7%, transparent); }
+.btn-sm { padding: 5px 11px; font-size: 12px; }
+.btn-ghost { background: transparent; border-color: transparent; color: var(--muted); }
+.btn-ghost:hover:not(:disabled) { color: var(--ink); border-color: var(--line); }
+
+/* ---------- notification bell ---------- */
+.bell { position: relative; }
+.bell-btn {
+  position: relative; width: 34px; height: 34px; border-radius: var(--radius);
+  border: 1px solid var(--line); background: var(--surface-1); cursor: pointer;
+  display: grid; place-items: center; font-size: 14px; color: var(--ink-2);
+  border-radius: 999px;
+}
+.bell-btn:hover { border-color: var(--ink-2); }
+.bell-count {
+  position: absolute; top: -7px; right: -7px; min-width: 17px; height: 17px;
+  padding: 0 4px; border-radius: 9px; background: var(--accent-bright);
+  color: #fff; font-size: 10px; font-weight: 700; display: grid;
+  place-items: center; border: 2px solid var(--page);
+}
+.bell-panel {
+  position: absolute; right: 0; top: 44px; width: 390px; max-height: 470px;
+  overflow-y: auto; background: var(--surface-1);
+  border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: var(--float); z-index: 40;
+}
+.bell-head {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 16px; border-bottom: 1px solid var(--grid);
+  font-size: 10px; text-transform: uppercase; letter-spacing: .14em;
+  font-weight: 600; color: var(--muted);
+}
+.note {
+  display: block; width: 100%; text-align: left; background: none; border: none;
+  border-bottom: 1px solid var(--grid); padding: 13px 16px; cursor: pointer;
+  color: inherit;
+}
+.note:hover { background: var(--page); }
+.note.unread { border-left: 2px solid var(--accent-bright); padding-left: 14px; }
+.note .t { font-weight: 600; font-size: 13.5px; margin-bottom: 3px; }
+.note .b { font-size: 12.5px; color: var(--ink-2); line-height: 1.5; }
+.note .w {
+  font-size: 10px; color: var(--muted); margin-top: 5px;
+  letter-spacing: .1em; text-transform: uppercase;
+}
+
+/* ---------- day breakdown (the calculation employees can check) ---------- */
+.daylist { border: 1px solid var(--grid); border-radius: 10px; overflow: hidden; }
+.dayrow {
+  display: grid; grid-template-columns: 108px 42px 1fr auto; gap: 12px;
+  align-items: center; padding: 8px 14px;
+  border-bottom: 1px solid var(--grid); font-size: 13px;
+}
+.dayrow:last-child { border-bottom: none; }
+.dayrow .date { font-family: var(--mono); font-size: 12px; color: var(--ink-2); }
+.dayrow .dow {
+  font-size: 10px; color: var(--muted); text-transform: uppercase;
+  letter-spacing: .1em;
+}
+.dayrow .charge { font-family: var(--mono); font-size: 12px; color: var(--ink-2); }
+.dayrow.leave { background: color-mix(in srgb, var(--navy-600) 6%, transparent); }
+.dayrow.half_day { background: color-mix(in srgb, var(--navy-600) 3%, transparent); }
+.dayrow.holiday .label { color: var(--serious); font-weight: 600; }
+.dayrow.weekend { color: var(--muted); }
+.daytotal {
+  display: flex; justify-content: space-between; padding: 12px 14px;
+  border-top: 1px solid var(--line); font-weight: 650; font-size: 14px;
+}
+
+/* ---------- team calendar ---------- */
+.calwrap { overflow-x: auto; }
+.calgrid { min-width: 720px; }
+.calhead, .calrow { display: grid; grid-template-columns: 150px 1fr; gap: 12px; align-items: center; }
+.calrow { padding: 3px 0; }
+.calname { font-size: 13px; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.caldays { position: relative; height: 26px; display: grid; }
+.caldaycell {
+  border-left: 1px solid var(--grid); font-size: 9.5px; color: var(--muted);
+  text-align: center; padding-top: 3px;
+}
+.caldaycell.we { background: color-mix(in srgb, var(--muted) 8%, transparent); }
+.caldaycell.hol { background: color-mix(in srgb, var(--serious) 11%, transparent); }
+.calbar {
+  position: absolute; top: 4px; height: 18px; border-radius: 5px;
+  display: flex; align-items: center; padding: 0 7px;
+  font-size: 10.5px; font-weight: 600; color: var(--on-fill);
+  box-shadow: 0 0 0 2px var(--surface-1); overflow: hidden; white-space: nowrap;
+}
+.calbar.pending {
+  background-image: repeating-linear-gradient(
+    135deg, transparent, transparent 4px,
+    rgba(255,255,255,.35) 4px, rgba(255,255,255,.35) 8px);
+}
+.legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; color: var(--ink-2); margin-top: 14px; }
+.legend .item { display: flex; align-items: center; gap: 7px; }
+.legend .swatch { width: 11px; height: 11px; border-radius: 3px; }
+
+/* ---------- alerts ---------- */
+/* A left rule instead of a filled box: it reads as an annotation on the page
+   rather than a notification bolted onto it. */
+.alert {
+  /* Rounded to match the cards, but keeping the left rule rather than a full
+     border: it still reads as an annotation on the page rather than a second
+     box stacked inside the first. */
+  border-radius: 8px; padding: 11px 14px; font-size: 13.5px;
+  display: flex; gap: 10px; align-items: flex-start;
+  border: none; border-left: 3px solid; margin-bottom: 12px;
+  line-height: 1.55;
+}
+.alert-warning { border-color: var(--warning); background: var(--warning-bg); color: var(--warning); }
+.alert-danger { border-color: var(--critical); background: color-mix(in srgb, var(--critical) 6%, transparent); color: var(--critical); }
+.alert-info { border-color: var(--navy-600); background: color-mix(in srgb, var(--navy-600) 5%, transparent); color: var(--navy-700); }
+:root[data-theme="dark"] .alert-info { color: #8ab4e8; }
+.alert-accent { border-color: var(--accent-bright); background: var(--accent-soft); color: var(--accent); }
+.alert-good { border-color: var(--good); background: color-mix(in srgb, var(--good) 6%, transparent); color: var(--good); }
+
+/* ---------- misc ---------- */
+.muted { color: var(--muted); }
+.small { font-size: 12.5px; }
+.mono { font-family: var(--mono); font-variant-numeric: tabular-nums lining-nums; }
+/* Empty states used to be 40px of nothing, which made a card with no rows
+   twice the height of the one beside it and left the grid looking broken. */
+.empty { padding: 22px 4px; text-align: center; color: var(--muted); font-size: 13px; }
+.stack { display: flex; flex-direction: column; gap: 14px; }
+.between { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.chips { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.timeline { border-left: 1px solid var(--line); margin-left: 6px; padding-left: 20px; }
+.tl-item { position: relative; padding-bottom: 20px; font-size: 13.5px; }
+.tl-item::before {
+  content: ''; position: absolute; left: -25px; top: 6px;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--surface-1); border: 1px solid var(--navy-600);
+}
+.tl-item.is-now::before { background: var(--accent-bright); border-color: var(--accent-bright); }
+.tl-when {
+  font-size: 10px; color: var(--muted); letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+/* ---------- login ---------- */
+/* Split screen: navy on the left carrying the name, paper on the right
+   carrying the form. Two flat fields of colour, one rule between them. */
+.login-wrap {
+  min-height: 100vh; display: grid; place-items: center; padding: 24px;
+  background: var(--navy-900);
+  background-image:
+    linear-gradient(180deg, var(--navy-800), var(--navy-900) 70%);
+  position: relative;
+}
+.login-wrap::after {
+  content: ''; position: absolute; inset: auto 0 0 0; height: 3px;
+  background: var(--accent-bright);
+}
+.login-card {
+  width: 100%; max-width: 400px;
+  background: var(--surface-1); border: none; border-radius: var(--radius);
+  padding: 34px 32px;
+}
+.login-brand {
+  color: #fff; text-align: center; margin-bottom: 26px;
+  font-size: 20px; font-weight: 650; letter-spacing: -.015em;
+}
+.login-brand span {
+  display: block; margin-top: 8px;
+  font-family: var(--sans); font-size: 10px; font-weight: 500;
+  letter-spacing: .2em; text-transform: uppercase; color: #7d93ad;
+}
+.login-foot {
+  text-align: center; margin-top: 20px; font-size: 12px; color: #7d93ad;
+}
+.demo-list { display: none; }        /* credentials are never shown on screen */

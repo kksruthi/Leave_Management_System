@@ -1,0 +1,9 @@
+SQLAlchemy>=2.0,<2.1
+alembic>=1.13
+psycopg2-binary>=2.9
+python-dotenv>=1.0
+holidays>=0.60
+pytest>=8.0
+fastapi>=0.110
+uvicorn[standard]>=0.29
+PyJWT>=2.8
